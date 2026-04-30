@@ -1,4 +1,4 @@
-package grokcode
+package main
 
 import (
 	"fmt"

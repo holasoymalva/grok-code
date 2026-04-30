@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/sashabaranov/go-openai"
 )
@@ -32,35 +31,25 @@ func NewAgent(apiKey string, baseURL string, model string) *Agent {
 	}
 }
 
-// RunLoop executes the agentic loop
-func (a *Agent) RunLoop(ctx context.Context, task string) error {
+// RunLoop executes the agentic loop and returns the reply
+func (a *Agent) RunLoop(ctx context.Context, task string) (string, error) {
 	a.Memory = append(a.Memory, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleUser,
 		Content: task,
 	})
 
-	// Simplistic loop: Plan -> Execute -> Verify
-	fmt.Println("Grok Code: Thinking...")
-
-	// Normally this would use streaming and tool calls
 	req := openai.ChatCompletionRequest{
 		Model:    a.Model,
 		Messages: a.Memory,
-		// Tools: (Add tool schemas here)
 	}
 
 	resp, err := a.Client.CreateChatCompletion(ctx, req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	reply := resp.Choices[0].Message
 	a.Memory = append(a.Memory, reply)
 
-	fmt.Printf("Grok Code: %s\n", reply.Content)
-
-	// Here we would implement the verification and self-correction loop
-	// If reply has tool calls, execute them and feedback results.
-
-	return nil
+	return reply.Content, nil
 }
