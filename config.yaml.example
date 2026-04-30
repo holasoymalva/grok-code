@@ -1,0 +1,20 @@
+# Grok Code Configuration
+
+# Default active model
+default_model: "grok"
+
+# Model Providers
+providers:
+  xai:
+    base_url: "https://api.x.ai/v1"
+    api_key: ""
+  deepseek:
+    base_url: "https://api.deepseek.com/v1"
+    api_key: ""
+  gemini:
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai"
+    api_key: ""
+
+# Cost thresholds
+cost_estimator:
+  warning_threshold: 1.0 # Warn if cost exceeds this amount in USD per command
