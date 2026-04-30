@@ -1,6 +1,7 @@
 # Grok Code
-
-<img width="376" height="123" alt="image" src="https://github.com/user-attachments/assets/7c96ae6a-bf8f-4c80-8003-efdb2b08a815" />
+<div align="center">
+  <img width="376" height="123" alt="image" src="https://github.com/user-attachments/assets/7c96ae6a-bf8f-4c80-8003-efdb2b08a815" />
+</div>
 
 <div align="center">
   <img src="https://img.shields.io/badge/Go-1.21%2B-00ADD8?style=for-the-badge&logo=go" alt="Go Version" />
