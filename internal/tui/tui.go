@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/holasoymalva/grok-code/internal/agent"
@@ -22,12 +23,18 @@ type model struct {
 	input    string
 	quitting bool
 	loading  bool
+	spin     spinner.Model
 }
 
 func InitialModel(ag *agent.Agent) tea.Model {
+	s := spinner.New()
+	s.Spinner = spinner.Dot
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+
 	return model{
 		agent:    ag,
 		messages: []string{"Grok Code: Hello! How can I help you build today?"},
+		spin:     s,
 	}
 }
 
@@ -35,7 +42,7 @@ type responseMsg string
 type errMsg error
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return m.spin.Tick
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -53,18 +60,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.input != "" && !m.loading {
 				userText := m.input
 				m.messages = append(m.messages, "You: "+userText)
-				m.messages = append(m.messages, "Grok Code: Thinking...")
 				m.input = ""
 				m.loading = true
 
-				return m, func() tea.Msg {
-					// Hardcoded temporary timeout/context for network
-					reply, err := m.agent.RunLoop(context.Background(), userText)
-					if err != nil {
-						return errMsg(err)
-					}
-					return responseMsg(reply)
-				}
+				return m, tea.Batch(
+					m.spin.Tick,
+					func() tea.Msg {
+						reply, err := m.agent.RunLoop(context.Background(), userText)
+						if err != nil {
+							return errMsg(err)
+						}
+						return responseMsg(reply)
+					},
+				)
 			}
 		case "backspace":
 			if len(m.input) > 0 {
@@ -76,14 +84,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		if m.loading {
+			m.spin, cmd = m.spin.Update(msg)
+			return m, cmd
+		}
+		return m, nil
+
 	case responseMsg:
 		m.loading = false
-		m.messages[len(m.messages)-1] = "Grok Code: " + string(msg)
+		m.messages = append(m.messages, "Grok Code: "+string(msg))
 		return m, nil
 
 	case errMsg:
 		m.loading = false
-		m.messages[len(m.messages)-1] = "Grok Code: Error API: " + msg.Error()
+		m.messages = append(m.messages, "Grok Code: Error API: "+msg.Error())
 		return m, nil
 	}
 	return m, nil
@@ -96,6 +112,11 @@ func (m model) View() string {
 
 	s := strings.Join(m.messages, "\n\n")
 	s += "\n\n"
+
+	if m.loading {
+		s += m.spin.View() + " Grok Code is thinking...\n\n"
+	}
+
 	s += "Input: " + m.input + "_"
 	s += "\n\n(Type /exit or press ctrl+c to quit)"
 

@@ -1,56 +1,102 @@
 # Grok Code
 
-![](https://img.shields.io/badge/Go-1.21%2B-00ADD8?style=flat-square) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="center">
+  <img src="https://img.shields.io/badge/Go-1.21%2B-00ADD8?style=for-the-badge&logo=go" alt="Go Version" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License" />
+  <img src="https://img.shields.io/badge/Status-Beta-success?style=for-the-badge" alt="Status" />
+</div>
 
-Grok Code is a maximalist, open-source agentic coding tool that lives right in your terminal. With strong "Grok vibes", it understands your codebase, plans complex tasks, edits files, runs tests, and handles your git workflows using natural language commands. 
+<br/>
 
-Unlike other tools, Grok Code features a **smart multi-model router**, seamlessly switching between xAI (Grok) for deep reasoning, DeepSeek for cost-effective operations, and Gemini for sheer speed.
+**Grok Code** is an advanced, terminal-native agentic coding environment. Engineered for speed and autonomy, it seamlessly integrates with your local workspace, reads your codebase, formulates execution plans, and autonomously modifies files to fulfill complex software requirements.
 
-**Learn more in our [official documentation](./docs/overview.md)** (Coming soon).
+Designed for developers who demand full control, Grok Code features a **Dynamic Multi-Model Router**—allowing you to leverage the reasoning power of Grok, the cost-efficiency of DeepSeek, or the raw speed of Gemini, all through a beautifully crafted Terminal User Interface (TUI).
 
-<img src="./demo.gif" alt="Grok Code Demo" />
+---
 
-## Get Started
+## ⚡ Core Architecture
 
-> [!NOTE]
-> Pre-compiled binaries are the fastest way to get started. No Go installation required.
+Grok Code operates on a continuous Agentic Loop, intercepting Natural Language requests and translating them into deterministic local file operations using strict JSON schemas.
 
-1. Install Grok Code:
+```mermaid
+graph TD
+    A[User Request] -->|Terminal UI| B(Agent Core)
+    
+    subgraph Multi-Model Router
+    B -->|Fast Mode| C[Gemini]
+    B -->|Reasoning Mode| D[xAI Grok]
+    B -->|Cheap Mode| E[DeepSeek]
+    end
+    
+    C --> F{Function Calling}
+    D --> F
+    E --> F
+    
+    F -->|write_file| G[Local Filesystem]
+    F -->|read_file| G
+    
+    G -->|Operation Success| B
+    B -->|Final Response| H[User View]
+```
 
-    **MacOS/Linux (Recommended):**
-    ```bash
-    curl -fsSL https://raw.githubusercontent.com/holasoymalva/grok-code/main/install.sh | bash
-    ```
+## ✨ Key Features
 
-    **Homebrew (MacOS/Linux):**
-    ```bash
-    brew install holasoymalva/tap/grok-code
-    ```
+- **Autonomous Code Execution**: Define a task, and the agent will recursively plan, write, and verify code directly in your local environment.
+- **Provider Agnostic**: Switch between top-tier LLMs instantly without altering your workflow. Fully compatible with any OpenAI-spec endpoint.
+- **Privacy First**: Zero telemetry. Your codebase never leaves your machine unless explicitly sent to the AI provider you configure.
+- **Frictionless UI**: Built on top of `Bubble Tea` and `Lipgloss` for a high-performance, artifact-free visual experience right in your terminal.
 
-    **Go Install (Developers):**
-    ```bash
-    go install github.com/holasoymalva/grok-code/cmd/grokcode@latest
-    ```
+## 🚀 Installation
 
-2. Run `grokcode chat` to initialize the wizard and configure your API keys.
+Pre-compiled binaries are available for seamless integration into your toolchain.
 
-## Core Features
+**MacOS / Linux (Recommended)**
+```bash
+curl -fsSL https://raw.githubusercontent.com/holasoymalva/grok-code/main/install.sh | bash
+```
 
-- **Multi-Model Support**: Use xAI (Grok), DeepSeek, Gemini, Groq, or even local LLMs (like Ollama).
-- **Smart Model Router**: Dynamically route tasks. Let DeepSeek handle simple scaffolding while Grok tackles complex architectural decisions.
-- **Agentic Loop**: Built-in capabilities for planning, tool execution, interactive diffs, and self-correction.
-- **Rich TUI**: Powered by Bubble Tea and Lipgloss for a dynamic, visually stunning terminal experience.
+**Go Developers**
+```bash
+go install github.com/holasoymalva/grok-code/cmd/grokcode@latest
+```
 
-## Reporting Bugs
+## ⚙️ Configuration
 
-We welcome your feedback and code contributions. Since Grok Code is fully open source, you can inspect everything under the hood. Open a [GitHub issue](https://github.com/holasoymalva/grok-code/issues) or submit a Pull Request.
+Grok Code uses a simple, declarative configuration model. On your first run, a `config.yaml` will be generated (or fallback to public endpoints).
 
-## Connect with the Community
+```yaml
+default_model: "grok"
 
-Join the [Grok Code Developers Discord](#) (Link coming soon) to connect with other developers. Get help, share your own custom tools, and discuss the future of open-source agentic coding.
+providers:
+  xai:
+    base_url: "https://api.x.ai/v1"
+    api_key: "xai-..."
+  deepseek:
+    base_url: "https://api.deepseek.com/v1"
+    api_key: "sk-..."
+```
 
-## Data Privacy & Telemetry
+## 📖 Usage
 
-Grok Code is fully open source and runs entirely on your local machine. 
+Navigate to any project directory and initialize the environment:
 
-**We do not collect telemetry, code snippets, or usage data.** Your code stays on your machine, and your prompts are only sent directly to the model providers you explicitly configure. There are no middlemen.
+```bash
+cd /path/to/your/project
+grokcode chat
+```
+
+Use natural language to direct the agent. Type `/exit` or press `Ctrl+C` to cleanly terminate the session.
+
+## 🤝 Contributing
+
+We welcome contributions from the community. Please review our architectural guidelines before submitting large feature requests. 
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
